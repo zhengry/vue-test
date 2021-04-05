@@ -59,7 +59,8 @@
     </ul>
     <h3>商品总价为：{{price}}</h3>
     <button @click="golink"> 
-      <a href="/components.html">去结算</a>
+      <!-- TODO: 修改为由父组件控制跳转页面，实现子组件向父组件通信 -->
+      <a href="cpn-communication.html">去结算</a>
     </button>
   </div>
 </template>
@@ -105,7 +106,7 @@
           this.books.splice(index, 1)
         },
         goNewLink() {
-          
+          console.log("跳转到新的html");
         }
       },
       computed: {

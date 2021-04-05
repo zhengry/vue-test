@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="vue.js"></script>
+  <link rel="stylesheet" href="first.css">
+
+</head>
+<body>
+    
+<div id="app">
+  <div v-if="this.books.length">
+    <table>
+      <thead>
+        <tr>
+          <th>编号</th>
+          <th>名称</th>
+          <th>售价</th>
+          <th>购买数量</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(book, index) in books">
+          <!-- <td v-for="value in book">{{value}}</td> -->
+          <td>{{book.id}}</td>
+          <td>{{book.name}}</td>
+          <td>{{book.price | formatterPrice(book.price)}}</td>
+          <td>
+            <button @click="decreaseCount(index)" v-bind:disabled="book.count <= 1"> - </button>
+            {{book.count}}
+            <button @click="increaseCount(index)"> + </button>
+          </td>
+          <td>
+            <button @click="removeBook(index)">移除</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- 使用过滤器 | 改变价格的显示格式 -->
+    <!-- <h3>购物车总价：{{totalPrice | formatterPrice(totalPrice)}}</h3>  -->
+    <book-component :books="books.map(book=>book.name)" :price="totalPrice | formatterPrice(totalPrice)" @btnclick="goNewLink"></book-component>
+  </div>
+
+  
+  <div v-else>
+    <h3>购物车为空</h3>
+  </div>
+</div>
+
+<template id="total">
+  <div>
+    <h3>已添加到购物车的商品有：</h3>
+    <ul>
+      <li v-for="book in books">{{book}}</li>
+    </ul>
+    <h3>商品总价为：{{price}}</h3>
+    <button @click="golink"> 
+      <a href="/components.html">去结算</a>
+    </button>
+  </div>
+</template>
+
+<script>
+
+    const bookComponent = {
+      template: "#total",
+      props: {
+        books: { // 当属性为数组，并且要给默认值的时候，需要使用default函数return一个数组，否则可以渲染出来，但会报错
+          default() {
+            return []
+          }
+        },
+        price: String
+      },
+      methods: {
+        btnclick() {
+          this.$emit('golink')
+        }
+      },
+    }
+
+    const app = new Vue({
+      el: '#app',
+      data: {
+        books:[
+          {id:1, name:"百年孤独", price: 120.9, count: 1},
+          {id:2, name:"追风筝的人", price: 30.29, count: 1},
+          {id:3, name:"平凡的世界", price: 60, count: 1},
+          {id:4, name:"城南旧事", price: 40, count: 1},
+          {id:5, name:"JavaScript高级教程", price: 98.0, count: 1}
+        ]
+      },
+      methods: {
+        increaseCount(index) {
+          this.books[index].count ++
+        },
+        decreaseCount(index) {
+          this.books[index].count --
+        },
+        removeBook(index) {
+          this.books.splice(index, 1)
+        },
+        goNewLink() {
+          
+        }
+      },
+      computed: {
+        totalPrice() {
+          return this.books.reduce((pre, book)=> pre + book.price * book.count, 0)
+        }
+      },
+      // 过滤器
+      filters: {
+        formatterPrice(price) {
+          return "￥" + price.toFixed(2)
+        }
+      },
+      // 注册子组件
+      components: {
+        bookComponent
+      }
+    })
+
+</script>
+
+</body>
+</html>
